@@ -1,9 +1,10 @@
 package io.org.reactivestax.domain;
 
 
-import io.org.reactivestax.type.CustomerStatusEnum;
-import io.org.reactivestax.type.OTPStatusEnum;
-import io.org.reactivestax.type.OTPVerificationStatusEnum;
+import io.org.reactivestax.type.enums.CustomerStatusEnum;
+import io.org.reactivestax.type.enums.DeliveryMethodEnum;
+import io.org.reactivestax.type.enums.OTPStatusEnum;
+import io.org.reactivestax.type.enums.OTPVerificationStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -44,6 +45,9 @@ public class Otp {
     private LocalDateTime blockedTimeFrame;
     private String mobileNumber;
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    private DeliveryMethodEnum deliveryMethod;
 
 
     @PrePersist

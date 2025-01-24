@@ -2,7 +2,7 @@ package io.org.reactivestax.service;
 
 import io.org.reactivestax.domain.NotificationMessage;
 import io.org.reactivestax.repository.NotificationMessageRepository;
-import io.org.reactivestax.type.DeliveryMethodEnum;
+import io.org.reactivestax.type.enums.DeliveryMethodEnum;
 import io.org.reactivestax.type.exception.JMSConsumerForEnsException;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.mail.javamail.JavaMailSender;
 
 @EnableJms
 @Configuration
@@ -23,10 +22,6 @@ public class JMSReceiver {
     @Value("${jms.queue}")
     String queueName;
 
-
-
-    @Value("${jms.otp.queue}")
-    String otpQueueName;
 
     @Autowired
     private final TwilioService twilioService;
@@ -45,6 +40,7 @@ public class JMSReceiver {
 
     @JmsListener(destination = "#{@environment.getProperty('jms.queue')}")
     public void onMessage(Message message) {
+
         System.out.println(message);
         try {
             if (message instanceof TextMessage textMessage) {
