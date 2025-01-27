@@ -13,9 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Service;
 
 @EnableJms
-@Configuration
+@Service
 @Slf4j
 @PropertySource("classpath:application.properties")
 public class JMSReceiver {
@@ -40,14 +41,13 @@ public class JMSReceiver {
 
     @JmsListener(destination = "#{@environment.getProperty('jms.queue')}")
     public void onMessage(Message message) {
-
-        System.out.println(message);
         try {
             if (message instanceof TextMessage textMessage) {
                 System.out.println("Received message: " + textMessage.getText());
                 NotificationMessage notificationMessage = notificationMessageRepository.findByMessageId(textMessage.getText());
                 if(notificationMessage.getDeliveryMethod().equals(DeliveryMethodEnum.SMS)) {
-                    twilioService.sendMessage(notificationMessage.getPhoneNumber(), notificationMessage.getRawMessage());
+                    twilioService.sendMessageViaRestTemplate(notificationMessage.getPhoneNumber(), notificationMessage.getRawMessage());
+//                    twilioService.sendMessage(notificationMessage.getPhoneNumber(), notificationMessage.getRawMessage());
                 } else if (notificationMessage.getDeliveryMethod().equals(DeliveryMethodEnum.CALL)) {
                     twilioService.makeCallToClient(notificationMessage.getPhoneNumber(),notificationMessage.getRawMessage());
                 }else {
