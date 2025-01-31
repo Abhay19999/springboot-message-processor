@@ -1,5 +1,6 @@
 package io.org.reactivestax.service;
 
+import io.org.reactivestax.domain.OTPLogin;
 import io.org.reactivestax.domain.Otp;
 import io.org.reactivestax.repository.ClientRepository;
 import io.org.reactivestax.repository.NotificationMessageRepository;
@@ -19,13 +20,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 
+
+
 @EnableJms
 @Configuration
 @Slf4j
 @PropertySource("classpath:application.properties")
 @RequiredArgsConstructor
-public class JMSReceiverForOtp {
-    @Value("${jms.otp.queue}")
+public class JMSReceiverForLogin {
+    @Value("${jms.login.queue}")
     String otpQueueName;
     @Autowired
     Environment environment;
@@ -35,17 +38,15 @@ public class JMSReceiverForOtp {
 //    private String accountSid;
 
 
-    private TwilioService twilioService;
-    private NotificationMessageRepository notificationMessageRepository;
-    private OTPRepository otpRepository;
+    private final TwilioService twilioService = new TwilioService();
     private EmailService emailService;
-    private ClientRepository clientRepository;
+
 
     @Autowired
     private OTPLoginRepository otpLoginRepository;
 
 
-    @JmsListener(destination = "#{@environment.getProperty('jms.otp.queue')}")
+    @JmsListener(destination = "otpLogin")
     public void onMessage(Message message) {
         String accountSid = environment.getProperty("TWILIO_ACCOUNT_SID");
 
@@ -54,7 +55,7 @@ public class JMSReceiverForOtp {
         try {
             if (message instanceof TextMessage textMessage) {
                 System.out.println("Received message: " + textMessage.getText());
-                Otp otp = otpRepository.findByOtpId(textMessage.getText());
+                OTPLogin otp = otpLoginRepository.findByOtpId(textMessage.getText());
                 DeliveryMethodEnum contactMethod = otp.getDeliveryMethod();
                 if(contactMethod.equals(DeliveryMethodEnum.SMS)) {
                     twilioService.sendMessage(otp.getMobileNumber(),String.valueOf(otp.getOtpNumber()));

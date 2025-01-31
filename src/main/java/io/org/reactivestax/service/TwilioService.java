@@ -22,25 +22,25 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-//@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.properties")
 @Service
 public class TwilioService {
+//
+//    @Autowired
+//    Environment environment;
 
-    @Autowired
-    Environment environment;
 
 
-
-//    @Value("${TWILIO_ACCOUNT_SID}")
-//    private String accountSid;
+//    @Value("${twilio.account.sid}")
+    private final String accountSid = "ACa433f148b43745a467a01da54b435945";
 //    @Value("${twilio.auth.token}")
-//    private String token;
-    @Value("${twilio.phone.number}")
-    private String twilioPhoneNumber;
+    private final String token = "cc9dab1926d066b92efd6bb19a73c143";
+//    @Value("${twilio.phone.number}")
+    private final String twilioPhoneNumber="+16203106513";
 
     public void sendMessage(String recipientNumber, String messageBody){
-        String accountSid = environment.getProperty("TWILIO_ACCOUNT_SID");
-        String token = environment.getProperty("TWILIO_AUTH_TOKEN");
+//        String accountSid = environment.getProperty("TWILIO_ACCOUNT_SID");
+//        String token = environment.getProperty("TWILIO_AUTH_TOKEN");
         Twilio.init(accountSid,token);
         Message.creator(
                 new com.twilio.type.PhoneNumber(recipientNumber),
@@ -49,7 +49,7 @@ public class TwilioService {
         ).create();
     }
     public void sendMessageViaRestTemplate(String recipientNumber, String messageBody){
-        String accountSid = environment.getProperty("TWILIO_ACCOUNT_SID");
+//        String accountSid = environment.getProperty("TWILIO_ACCOUNT_SID");
         String authToken = "cc9dab1926d066b92efd6bb19a73c143";
         String url = "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json";
 
@@ -83,8 +83,8 @@ public class TwilioService {
     }
     public void makeCallToClient(String recipientNumber,String messageBody)  {
         String twiml = "<Response><Say>"+messageBody+"</Say></Response>";
-        String accountSid = environment.getProperty("TWILIO_ACCOUNT_SID");
-        String token = environment.getProperty("TWILIO_AUTH_TOKEN");
+//        String accountSid = environment.getProperty("TWILIO_ACCOUNT_SID");
+//        String token = environment.getProperty("TWILIO_AUTH_TOKEN");
 
         Twilio.init(accountSid,token);
 
